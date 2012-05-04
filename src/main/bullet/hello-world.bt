@@ -1,0 +1,21 @@
+// this is your basic hello world program!
+
+func greet ()
+  print "Hello, " main.args.0 "!" // main.args is an array of arg line parameters.
+
+greet
+
+set pair: env
+  set x 1d
+  set y 0d
+
+print pair.x
+
+set name: hmap
+print: with name
+  put "Martin" "Awesome"
+  put "Jojo"   "Awesome"
+
+
+//"martin" . substring 2 . substring 1 | print 
+

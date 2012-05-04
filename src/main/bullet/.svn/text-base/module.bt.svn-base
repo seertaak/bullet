@@ -1,0 +1,3 @@
+module org.bt.date
+  public
+    func date (y m d): new JDate y m d

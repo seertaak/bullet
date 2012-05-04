@@ -1,0 +1,36 @@
+// This folows the expose available at:
+// http://www.learningclojure.com/2010/09/clojure-macro-tutorial-part-i-getting.html
+
+func factorial (n)
+  if (n equals 0)
+    1
+    * n: factorial: dec n
+
+5 | factorial | print
+
+set x: env
+  var y 1
+  set xx 2
+  set foo: env
+    set zztop 10
+
+print x
+
+print: str.join "Martin, " "Jojo"
+
+import javax.swing.JFrame
+import javax.swing.JPanel
+import java.awt.Component
+import javax.swing.JLabel
+import javax.swing.JButton
+
+//set frame: new JFrame "Test"
+//frame add: new JButton "Hello, world!"
+//frame setSize 640 400
+//frame setVisible true
+
+
+class MyFrame
+  xtnd JPanel
+  meth updateComponent (x) null
+  

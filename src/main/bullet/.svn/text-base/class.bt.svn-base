@@ -1,0 +1,116 @@
+module mp.geom
+  public
+    class Point
+      extends Value
+      implements Iterable
+
+      var numPoints 0
+
+      mvar x
+      mvar y
+
+      mk.list 
+      mk.map 
+      mk.llst 
+      mk.queue 
+
+      var ls: mk.list 0 1 23
+      var ls: mk.map "Martin" 1  
+                     "Alex"   2
+
+      mfunc init (x y)
+        inc numPoints
+        set
+          this.x x
+          this.y y
+      mfunc toString ()
+        "(". concat x.toString . concat ", " 
+             . concat y.toString
+
+mvar x.name "Hello"
+
+NEW CONCEPT
+
+Bullet should basically "open up the JVM" to you.
+
+1.7 JVM Offers:
+
+Basic Java Stuff
+
+- Classes
+  - static variables 
+  - member variables
+  - methods
+  - static methods
+  - static initialization code
+  - constructors
+  - single-inheritance, multiple-implementation.
+  - abstract methods (and classes)
+  - serialization baked in
+- Interfaces
+  - abstract methods
+
+New Dynamic Stuff
+
+- AnonymousClassLoader: makes it really easy to 
+  generate new classes on the fly, i.e. with asm.
+- dynalink: gives easy access to invokedynamic
+
+- asm visitor allows to transform a class into a new
+  class, taking the previous guy's state and e.g.:
+    * adding a new member
+    * deleting a member
+    * implementing a new interface
+    * extending some object
+
+e.g.
+
+
+interface Nameable
+  String getName 
+  void setName
+    String newName
+
+class NamedClass
+  xtnd Integer
+  impl MyNumeric
+  mvar name
+  mfnc getName (format)
+    ...
+
+   
+var bob: obj
+  mvar name "Bob"
+  mvar age  33
+
+set bob.name "Bobby"
+set bob.height 180
+
+bob set height 180
+bob set
+  hobbies: mkList "Hiking" "Skiing"
+  gpa      4
+
+
+
+
+mfunc bob.mkKids (wife)
+  var result null
+  while (not: set result: this screw wife)
+  result
+
+mfunc bob.init (name)
+  set this.name name
+
+mfunc bob.invoke (i)
+  "Bobby" substring i
+
+var foo: new bob.getClass "Mr. Foo"
+
+print: bob.1 // prints "obby"
+
+bob invoke "age" // ==> bob.age
+
+print bob.hobbies
+print bob.gpa
+

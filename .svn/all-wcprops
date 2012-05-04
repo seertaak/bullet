@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/!svn/ver/4/trunk/bullet
+END
+.classpath
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/3/trunk/bullet/.classpath
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/!svn/ver/3/trunk/bullet/.project
+END
+bt
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/3/trunk/bullet/bt
+END
+build.properties
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/3/trunk/bullet/build.properties
+END
+pom.xml
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/3/trunk/bullet/pom.xml
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/!svn/ver/3/trunk/bullet/README
+END

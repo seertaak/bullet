@@ -1,0 +1,12 @@
+
+set y 5
+
+module m
+  set x 1
+
+  func dblx ()
+    set x: + y: * x 2
+
+set x 2
+
+print: m.dblx

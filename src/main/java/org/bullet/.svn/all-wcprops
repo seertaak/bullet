@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/4/trunk/bullet/src/main/java/org/bullet
+END
+Reader.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Reader.java
+END
+Interpreter.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/4/trunk/bullet/src/main/java/org/bullet/Interpreter.java
+END
+BulletException.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/BulletException.java
+END
+StupidTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/StupidTest.java
+END
+CodeLoc.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/CodeLoc.java
+END
+Invokable.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Invokable.java
+END
+Compiler.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Compiler.java
+END
+IllegalIndent.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/IllegalIndent.java
+END
+Ref.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Ref.java
+END
+Type.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Type.java
+END
+Variable.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Variable.java
+END
+Bullet.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Bullet.java
+END
+LineProcessor.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/LineProcessor.java
+END
+Pair.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/Pair.java
+END
+CodeFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/3/trunk/bullet/src/main/java/org/bullet/CodeFragment.java
+END

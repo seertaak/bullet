@@ -1,0 +1,28 @@
+// how do we do Java class extension and implementation?
+
+import javax.swing.JFrame
+import javax.swing.JPanel
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Graphics2D
+
+func render (g w h)
+  func drawTree (... . .)
+    sdfsdf
+  with g
+    setColor Color.BLACK
+    fillRect 0 0 w h
+    setColor Color.GREEN
+  print "Not implemented yet."
+
+set frame: new JFrame "Bullet Fractal Tree"
+set panel: jobject 3 4 5
+  xtnd JPanel
+  meth paintComponent (g)
+    super.paintComponent g
+    render g getWidth getHeight
+with frame
+  add panel
+  setSize 640 400
+  setVisible true
+

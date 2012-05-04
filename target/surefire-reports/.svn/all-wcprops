@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/3/trunk/bullet/target/surefire-reports
+END
+TEST-org.bullet.AppTest.xml
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/3/trunk/bullet/target/surefire-reports/TEST-org.bullet.AppTest.xml
+END
+org.bullet.AppTest.txt
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/3/trunk/bullet/target/surefire-reports/org.bullet.AppTest.txt
+END
