@@ -24,3 +24,11 @@ target/bullet-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 which is the version of the jar file that contains all the dependencies required
 for the project. If you already have the dependencies on your classpath,
 then you can use the smaller bullet-0.0.1-SNAPSHOT.jar.
+
+For more information on Bullet, see:
+
+http://seertaak.posterous.com/bullet-adventures-in-a-minimally-delimited-li
+http://www.arclanguage.org/item?id=15769
+http://it.reddit.com/r/programming/comments/pekx5/bullet_adventures_in_a_minimallydelimited_lisp/
+
+
