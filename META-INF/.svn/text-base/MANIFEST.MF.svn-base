@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: bullet
-Bundle-SymbolicName: bullet
-Bundle-Version: 1.0.0.qualifier
-Export-Package: org.bullet,
- org.bullet.lexer,
- org.bullet.primitive,
- org.bullet.value

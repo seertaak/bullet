@@ -1,5 +1,0 @@
-#!/bin/bash
-
-JAR=../../../target/bullet-0.0.1-SNAPSHOT-jar-with-dependencies.jar 
-
-java -jar $JAR $*
