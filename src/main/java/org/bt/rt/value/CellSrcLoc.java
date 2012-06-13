@@ -1,5 +1,7 @@
 package org.bt.rt.value;
 
+import org.bt.SrcLoc;
+
 public class CellSrcLoc extends Cell {
 	private static final long serialVersionUID = -5188953181259118917L;
 	

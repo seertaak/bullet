@@ -1,6 +1,5 @@
 package org.bt;
 
-import org.bt.rt.value.SrcLoc;
 
 public class BtException extends RuntimeException {
 	private static final long serialVersionUID = 7543045681116185309L;
