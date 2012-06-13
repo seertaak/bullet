@@ -19,7 +19,6 @@ import sun.invoke.anon.AnonymousClassLoader;
 import static org.objectweb.asm.commons.Method.*;
 import static org.objectweb.asm.Type.*;
 
-@SuppressWarnings("restriction")
 public class DynaTest implements Opcodes {
 	
 	private static final String CLASSNAME = "/org/bullet/asm/DynaTestGen";
