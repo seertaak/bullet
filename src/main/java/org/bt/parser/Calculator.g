@@ -29,34 +29,57 @@ exprs returns [List<Object> vals]
   ;
 
 bexpr returns [Object val]
-  : ^(BEXPR b=bexpr) {
-    $val = $b.val;
-  } 
-  | printExpr { $val = null; }
-  | arithExpr { $val = $arithExpr.val; }
-  | literal { $val = $literal.val; }
+  : printExpr           { $val = null; }
+  | varDef              { $val = $varDef.val; }
+  | setExpr             { $val = $setExpr.val; }
+  | arithExpr           { $val = $arithExpr.val; }
+  | ^(BEXPR b=bexpr)    { $val = $b.val; }
+  | literal             { $val = $literal.val; }
   ;
 
-printExpr 
-  : ^(BEXPR ID es=exprs) {
+printExpr
+  : {((CommonTree)input.LT(3)).getText().equals("print")}?  // semantic predicate: is the ID == 'print'?
+    ^(BEXPR ID es=exprs) 
+  {
     String ident = $ID.text;
-    if (ident.equals("print")) {
-      List<Object> vals = $exprs.vals;
-      if (vals != null)
-        System.out.println(Joiner.on("").join(vals));
-      else
-        throw new BtException("Argument list to print is null", new SrcLoc(null, $BEXPR.line, $BEXPR.pos));
-    } else if (ident.equals("set")) {
-    } else if (ident.equals("var")) {
-    } else {
-      throw new BtException("Unidentified operation", new SrcLoc(null, $BEXPR.line, $BEXPR.pos));
-    }
+    List<Object> vals = $exprs.vals;
+    if (vals != null)
+      System.out.println(Joiner.on("").join(vals));
+    else
+      throw new BtException("Argument list to print is null", new SrcLoc(null, $BEXPR.line, $BEXPR.pos));
+  }
+  ;  
+  
+varDef returns [Object val]
+  : {((CommonTree)input.LT(3)).getText().equals("var")}?  // semantic predicate: is the ID == 'var'? 
+    ^(BEXPR op=ID id=ID v=bexpr) {
+    String ident = $op.text;
+    System.out.println("Variable: " + $id.text);
+    $val = $v.val;
   }
   ;
   
+setExpr returns [Object val]
+  : {((CommonTree)input.LT(3)).getText().equals("set")}?  // semantic predicate: is the ID == 'set'? 
+    ^(BEXPR op=ID id=ID v=bexpr) {
+    String ident = $op.text;
+    System.out.println("Variable set: " + $id.text);
+    $val = $v.val;
+  }
+  ;
+
 arithExpr returns [Object val]
 @init{ int etyp = 0; }
-  : ^(BEXPR ('+' {etyp=0;}|'-' {etyp=1;}|'*' {etyp=2;}|'/' {etyp=3;}|MODOP {etyp=4;}) es=exprs) {
+  : {
+      ((CommonTree)input.LT(3)).getText().equals("+") ||  
+      ((CommonTree)input.LT(3)).getText().equals("-") ||  
+      ((CommonTree)input.LT(3)).getText().equals("*") ||  
+      ((CommonTree)input.LT(3)).getText().equals("/") ||    
+      ((CommonTree)input.LT(3)).getText().equals("\%")   
+
+    }?   
+    ^(BEXPR ('+' {etyp=0;}|'-' {etyp=1;}|'*' {etyp=2;}|'/' {etyp=3;}|MODOP {etyp=4;}) es=exprs) 
+  {
       List<Object> vals = $exprs.vals;
       
       if (vals.size() != 2) 
@@ -133,7 +156,7 @@ arithExpr returns [Object val]
       }
   }
   ;
-  
+ 
 literal returns [Object val]
   : ID      { $val = $ID.text; }
   | ARROW   { $val = $ARROW;}
