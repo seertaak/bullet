@@ -21,48 +21,39 @@ program
   : exprs
   ;
 
-exprs returns [List<?> vals]
-  : es+=bexpr+ {
-    $vals = $es;
-  }
+exprs returns [List<Object> vals]
+@init{ $vals = new ArrayList<>(); }
+  : (bexpr {
+   $vals.add($bexpr.val);
+  })+ 
   ;
 
 bexpr returns [Object val]
   : ^(BEXPR ID es=exprs) {
     if ($ID.text.equals("print")) {
-      List<?> children = ((CommonTree)$es.tree).getChildren();
-      System.out.println(Joiner.on(" ").join(children));
-      
+      System.out.println(Joiner.on(" ").join($exprs.vals));
       $val = null;
     } else {
       throw new BtException("Unidentified operation", new SrcLoc(null, $BEXPR.line, $BEXPR.pos));
     }
   }
-  | literal {
-    CommonTree tree = (CommonTree) $literal.tree;
-    Token token = tree.getToken();
-    String text = token.getText();
-    if (token.getType() == STRING)
-      $val = text.substring(1, text.length()-1);
-    else if (token.getType() == INT)
-      $val = Integer.valueOf(text);
-    else
-      $val = text;
+  | literal { $val = $literal.val; }
+  ;
+  
+literal returns [Object val]
+  : ID      { $val = $ID; }
+  | ARROW   { $val = $ARROW;}
+  | INT     { $val = Integer.valueOf($INT.text);  }
+  | FLOAT   { $val = Double.valueOf($FLOAT.text); }
+  | STRING  {     
+    String text = $STRING.text;
+    $val = text.substring(1, text.length()-1);
   }
+  | CHAR    { $val = $CHAR.text; }
+  | boolLit { $val = $boolLit.val; }
   ;
   
-literal 
-  : ID
-  | ARROW
-  | INT
-  | FLOAT
-  | STRING
-  | CHAR
-  | boolLit
+boolLit returns [boolean val]
+  : TRUE    { $val = true;  }
+  | FALSE   { $val = false; }
   ;
-  
-boolLit 
-  : TRUE
-  | FALSE
-  ;
-  
