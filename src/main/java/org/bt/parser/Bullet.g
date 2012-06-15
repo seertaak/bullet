@@ -109,11 +109,15 @@ addExpr
   
 multExpr
 @init{boolean isProd = false; int typ = 0; }
-  : unaryOpExpr (('*' {typ = 0;} | '/' {typ = 1;} | '%' {typ=2;}) {isProd = true; } multExpr)?
+  : unaryOpExpr (('*' {typ = 0;} | '/' {typ = 1;} | MODOP {typ=2;}) {isProd = true; } multExpr)?
    -> {isProd && typ==0}? ^(BEXPR '*' unaryOpExpr multExpr)
    -> {isProd && typ==1}? ^(BEXPR '/' unaryOpExpr multExpr)
-   -> {isProd && typ==2}? ^(BEXPR '%' unaryOpExpr multExpr)
+   -> {isProd && typ==2}? ^(BEXPR MODOP unaryOpExpr multExpr)
    -> unaryOpExpr
+  ;
+  
+MODOP 
+  : '%'
   ;
   
 unaryOpExpr

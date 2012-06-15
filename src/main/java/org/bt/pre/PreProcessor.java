@@ -18,7 +18,7 @@ public class PreProcessor {
 			document_return document = parser.document();
 			Tree docTree = (Tree) document.tree;
 			
-			System.out.println(docTree.toStringTree());
+			//System.out.println(docTree.toStringTree());
 			CommonTreeNodeStream nodes = new CommonTreeNodeStream(docTree);
 			nodes.setTokenStream(tokens);
 			PrePrint pre = new PrePrint(nodes);

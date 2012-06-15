@@ -18,18 +18,17 @@ public class ParseTest {
 	public static void main(String...args) throws IOException, RecognitionException {
 		Path inputFile = Paths.get("/home/mpercossi/bt/calc.bt");
 		String preSrc = PreProcessor.process(new ANTLRFileStream(inputFile.toString(), "UTF8"));
-		
-		System.out.println("Source code:\n" + preSrc);
+		System.out.println("Pre-processed source: " + preSrc);
 		
 		BulletLexer lex = new BulletLexer(new ANTLRStringStream(preSrc));
 		CommonTokenStream tokens = new CommonTokenStream(lex);
 
 		BulletParser parser = new BulletParser(tokens);
 		code_return code = parser.code();
-		System.out.println(((Tree)code.tree).toStringTree().toString());
+		//System.out.println(((Tree)code.tree).toStringTree().toString());
 		Tree docTree = (Tree) code.tree;
 		
-		System.out.println("TREE:" + docTree.toStringTree());
+		System.out.println("Parsed AST: " + docTree.toStringTree());
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(docTree);
 		nodes.setTokenStream(tokens);
 		Calculator calc = new Calculator(nodes);
