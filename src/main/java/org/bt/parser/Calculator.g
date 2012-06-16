@@ -14,7 +14,12 @@ options {
   
   import org.bt.BtException;
   import org.bt.SrcLoc;
+  import org.bt.IdentifierAttributes;
   import java.lang.Integer;
+}
+
+@members {
+  //private 
 }
 
 program
