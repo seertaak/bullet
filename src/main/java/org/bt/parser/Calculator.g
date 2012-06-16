@@ -10,16 +10,21 @@ options {
 @header {
   package org.bt.parser;
   
+  import java.lang.Integer;
   import com.google.common.base.Joiner;
   
   import org.bt.BtException;
   import org.bt.SrcLoc;
   import org.bt.IdentifierAttributes;
-  import java.lang.Integer;
+  import org.bt.SymbolTable;
 }
 
 @members {
-  //private 
+  private SymbolTable root;
+  
+  public void init() {
+    root = new SymbolTable();
+  }
 }
 
 program
