@@ -1,2 +1,4 @@
 var i: 10*10
-print i
+var j 22
+set j 10
+print i+j

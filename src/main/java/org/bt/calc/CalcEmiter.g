@@ -33,6 +33,17 @@ options {
     root = new SymbolTable();
     this.mg = mg;
   }
+  
+  private void loadVar(CommonTree id) {
+    String ident = id.getText();
+    IdentifierAttributes idas = root.lookup(ident);
+    if (idas == null)
+      throw new BtException("Reference to undefined variable " + ident, new SrcLoc(null, id.getLine(), 
+                  id.getCharPositionInLine()));
+    
+    int varId = (Integer) idas.get("varId");
+    mg.loadLocal(varId);
+  }
 }
 
 program
@@ -46,7 +57,7 @@ exprs
 bexpr
   : literal
   | varDef
-//  | setExpr             { $val = $setExpr.val; }
+  | setExpr
   | printExpr
   | arithExpr
   | ^(BEXPR b=bexpr)
@@ -82,7 +93,6 @@ varDef
 	    bexpr
 	  ) 
   {
-    // this is slightly inefficient, since we have to look up the identifier twice for each var expression.
     String ident = $id.text;
     IdentifierAttributes idas = root.lookup(ident);
     if (idas == null)
@@ -93,20 +103,25 @@ varDef
     mg.storeLocal(varId);
   }
   ;
-//  
-//setExpr returns [Object val]
-//  : {((CommonTree)input.LT(3)).getText().equals("set")}?  // semantic predicate: is the ID == 'set'? 
-//    ^(BEXPR op=ID id=ID v=bexpr) {
-//    String ident = $op.text;
-//    IdentifierAttributes idAttr = root.lookup(ident);
-//    if (idAttr == null) {
-//      idAttr = new IdentifierAttributes(ident);
-//      root.insert(idAttr);
-//    }
-//    System.out.println("Variable set: " + root.lookup(ident));
-//    $val = $v.val;
-//  }
-//  ;
+  
+setExpr
+  : {((CommonTree)input.LT(3)).getText().equals("set")}?  // semantic predicate: is the ID == 'set'? 
+    ^(BEXPR 
+      ID 
+      id=ID { loadVar($id.tree); }
+      bexpr
+    ) 
+  {
+    String ident = $id.text;
+    IdentifierAttributes idas = root.lookup(ident);
+    if (idas == null)
+      throw new BtException("Reference to undefined variable " + ident + ", symbol table: " + root, 
+                new SrcLoc(null, $id.line, $id.pos));
+    
+    int varId = (Integer) idas.get("varId");
+    mg.storeLocal(varId);
+  }
+  ;
 
 arithExpr returns [Object val]
 @init{ int etyp = 0; }
@@ -136,14 +151,7 @@ arithExpr returns [Object val]
  
 literal 
   : ID {
-    String ident = $ID.text;
-    IdentifierAttributes idas = root.lookup(ident);
-    if (idas == null)
-      throw new BtException("Reference to undefined variable " + ident, new SrcLoc(null, $ID.line, $ID.pos));
-    
-    int varId = (Integer) idas.get("varId");
-    mg.loadLocal(varId);
-  
+    loadVar($ID.tree);
   }
   | INT { 
     mg.push(Integer.valueOf($INT.text));
