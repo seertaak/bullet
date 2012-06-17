@@ -1,1 +1,1 @@
-print "Hello"
+print 24+24*10

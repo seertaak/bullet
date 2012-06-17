@@ -29,6 +29,7 @@ node
   | i=FLOAT                     -> template(t={$i.text})  "<t>" 
   | i=STRING                    -> template(t={$i.text})  "<t>" 
   | i=CHAR                      -> template(t={$i.text})  "<t>" 
-  | v=(TRUE|FALSE)              -> template(t={$v.text})  "<t>"
+  | TRUE                        -> template()             "true"
+  | FALSE                       -> template()             "false"
   | ARROW                       -> template()             "->" 
   ;

@@ -152,8 +152,8 @@ literal
   ;
   
 boolLit 
-  : TRUE^
-  | FALSE^
+  : TRUE
+  | FALSE
   ;
   
 TRUE  : 'true';

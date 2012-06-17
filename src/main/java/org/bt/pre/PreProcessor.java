@@ -17,14 +17,12 @@ public class PreProcessor {
 			document_return document = parser.document();
 			Tree docTree = (Tree) document.tree;
 			
-			//System.out.println(docTree.toStringTree());
 			CommonTreeNodeStream nodes = new CommonTreeNodeStream(docTree);
 			nodes.setTokenStream(tokens);
 			PrePrint pre = new PrePrint(nodes);
 			org.bt.pre.PrePrint.document_return document2 = pre.document();
 			
 			return document2.st.toString();
-			//return docTree.toStringTree();
 		} catch (RecognitionException e) {
 			throw new RuntimeException("Caught exception during preprocessing: " + e);
 		}

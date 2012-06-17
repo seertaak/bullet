@@ -1,6 +1,7 @@
 package org.bt.calc;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -15,10 +16,11 @@ import org.bt.parser.BulletParser;
 import org.bt.parser.BulletParser.code_return;
 import org.bt.pre.PreProcessor;
 
-public class ParseTest {
+public class CalcInterp {
 	
-	public static void main(String...args) throws IOException, RecognitionException {
-		Path inputFile = Paths.get("/home/mpercossi/bt/calc.bt");
+	public static void main(String...args) throws IOException, RecognitionException, URISyntaxException {
+		Path inputFile = Paths.get(CalcInterp.class.getResource("/test.bt").toURI());
+		System.out.println("Reading from: " + inputFile.toString());
 		String preSrc = PreProcessor.process(new ANTLRFileStream(inputFile.toString(), "UTF8"));
 		System.out.println("Pre-processed source: " + preSrc);
 		

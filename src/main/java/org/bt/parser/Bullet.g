@@ -144,12 +144,12 @@ unaryOpExpr0
   ;
 
 literal	
-  :	ID
+  :	boolLit
 	|	INT
 	|	FLOAT
 	|	STRING
 	|	CHAR
-	|	boolLit
+	|	ID
 	;
 	
 boolLit	
