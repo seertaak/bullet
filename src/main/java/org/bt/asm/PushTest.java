@@ -32,10 +32,16 @@ public class PushTest implements Opcodes {
 			
 		    mg.getStatic(getType(java.lang.System.class), "out", getType(java.io.PrintStream.class));
 
+		    int x = mg.newLocal(Type.getType(Object.class));
 			mg.push(20.0);
 			mg.box(Type.DOUBLE_TYPE);
+			mg.storeLocal(x);
+			
+			
 			mg.push(30.0);
 			mg.box(Type.DOUBLE_TYPE);
+			mg.loadLocal(x);
+			
 			mg.invokeStatic(getType(org.bt.runtime.Math.class), getMethod("Object add (Object, Object)"));
 			
 			mg.invokeVirtual(getType(Object.class), getMethod("String toString()"));

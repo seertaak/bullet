@@ -45,7 +45,7 @@ exprs
 
 bexpr
   : literal
-//  | varDef              { $val = $varDef.val; }
+  | varDef
 //  | setExpr             { $val = $setExpr.val; }
   | printExpr
   | arithExpr
@@ -64,20 +64,35 @@ printExpr
   }
   ;  
 
-//varDef
-//returns [Object val]
-//scope {boolean isDef;} 
-//  : {((CommonTree)input.LT(3)).getText().equals("var")}?  // semantic predicate: is the ID == 'var'? 
-//    ^(BEXPR op=ID id=ID v=bexpr) {
-//    $varDef::isDef = true;
-//    String ident = $op.text;
-//    if (root.lookup(ident) != null)
-//      throw new BtException("Illegal attempt to redeclare variable " + ident, new SrcLoc(null, $BEXPR.line, $BEXPR.pos));
-//    root.insert(new IdentifierAttributes(ident));
-//    System.out.println("Variable: " + root.lookup(ident) + " := " + $v.tree.toStringTree());
-//    $val = $v.val;
-//  }
-//  ;
+varDef
+  : {((CommonTree)input.LT(3)).getText().equals("var")}?  // semantic predicate: is the ID == 'var'? 
+    ^(BEXPR 
+      ID 
+      id=ID {
+	      String ident = $id.text;
+	      if (root.lookup(ident) != null)
+	        throw new BtException("Illegal attempt to redeclare variable " + ident, new SrcLoc(null, $id.line, $id.pos));
+	    
+	      IdentifierAttributes idas = new IdentifierAttributes(ident);
+	      int varId = mg.newLocal(getType(java.lang.Object.class));
+	      idas.set("varId", varId);
+	      
+	      root.insert(idas);
+	    }
+	    bexpr
+	  ) 
+  {
+    // this is slightly inefficient, since we have to look up the identifier twice for each var expression.
+    String ident = $id.text;
+    IdentifierAttributes idas = root.lookup(ident);
+    if (idas == null)
+      throw new BtException("Reference to undefined variable " + ident + ", symbol table: " + root, 
+                new SrcLoc(null, $id.line, $id.pos));
+    
+    int varId = (Integer) idas.get("varId");
+    mg.storeLocal(varId);
+  }
+  ;
 //  
 //setExpr returns [Object val]
 //  : {((CommonTree)input.LT(3)).getText().equals("set")}?  // semantic predicate: is the ID == 'set'? 
@@ -120,7 +135,16 @@ arithExpr returns [Object val]
   ;
  
 literal 
-  : ID 
+  : ID {
+    String ident = $ID.text;
+    IdentifierAttributes idas = root.lookup(ident);
+    if (idas == null)
+      throw new BtException("Reference to undefined variable " + ident, new SrcLoc(null, $ID.line, $ID.pos));
+    
+    int varId = (Integer) idas.get("varId");
+    mg.loadLocal(varId);
+  
+  }
   | INT { 
     mg.push(Integer.valueOf($INT.text));
     mg.box(Type.INT_TYPE);  
