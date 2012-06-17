@@ -1,4 +1,4 @@
-package org.bt.parser;
+package org.bt.calc;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,6 +10,8 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.Tree;
+import org.bt.parser.BulletLexer;
+import org.bt.parser.BulletParser;
 import org.bt.parser.BulletParser.code_return;
 import org.bt.pre.PreProcessor;
 
@@ -25,13 +27,13 @@ public class ParseTest {
 
 		BulletParser parser = new BulletParser(tokens);
 		code_return code = parser.code();
-		//System.out.println(((Tree)code.tree).toStringTree().toString());
-		Tree docTree = (Tree) code.tree;
+		Tree docTree = (Tree) code.getTree();
 		
 		System.out.println("Parsed AST: " + docTree.toStringTree());
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(docTree);
 		nodes.setTokenStream(tokens);
 		Calculator calc = new Calculator(nodes);
+		calc.init();
 		calc.program();
 	}
 }

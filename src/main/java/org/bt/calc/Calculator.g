@@ -8,10 +8,14 @@ options {
 }
 
 @header {
-  package org.bt.parser;
+  package org.bt.calc;
   
   import java.lang.Integer;
   import com.google.common.base.Joiner;
+  import org.objectweb.asm.commons.GeneratorAdapter;
+  
+  import static org.objectweb.asm.commons.Method.*;
+  import static org.objectweb.asm.Type.*;
   
   import org.bt.BtException;
   import org.bt.SrcLoc;
@@ -21,6 +25,7 @@ options {
 
 @members {
   private SymbolTable root;
+  private GeneratorAdapter mg;
   
   public void init() {
     root = new SymbolTable();
@@ -64,7 +69,10 @@ varDef returns [Object val]
   : {((CommonTree)input.LT(3)).getText().equals("var")}?  // semantic predicate: is the ID == 'var'? 
     ^(BEXPR op=ID id=ID v=bexpr) {
     String ident = $op.text;
-    System.out.println("Variable: " + $id.text);
+    if (root.lookup(ident) != null)
+      throw new BtException("Illegal attempt to redeclare variable " + ident, new SrcLoc(null, $BEXPR.line, $BEXPR.pos));
+    root.insert(new IdentifierAttributes(ident));
+    System.out.println("Variable: " + root.lookup(ident) + " := " + $v.tree.toStringTree());
     $val = $v.val;
   }
   ;
@@ -73,7 +81,12 @@ setExpr returns [Object val]
   : {((CommonTree)input.LT(3)).getText().equals("set")}?  // semantic predicate: is the ID == 'set'? 
     ^(BEXPR op=ID id=ID v=bexpr) {
     String ident = $op.text;
-    System.out.println("Variable set: " + $id.text);
+    IdentifierAttributes idAttr = root.lookup(ident);
+    if (idAttr == null) {
+      idAttr = new IdentifierAttributes(ident);
+      root.insert(idAttr);
+    }
+    System.out.println("Variable set: " + root.lookup(ident));
     $val = $v.val;
   }
   ;

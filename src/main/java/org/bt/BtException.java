@@ -16,7 +16,7 @@ public class BtException extends RuntimeException {
 		super("Caught bullet exception at: " + srcLoc + ": ", e);
 	}
 	
-	public BtException(Exception e) {
+	public BtException(Throwable e) {
 		super(e);
 	}
 
