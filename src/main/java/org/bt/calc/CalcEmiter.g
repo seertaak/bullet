@@ -14,6 +14,7 @@ options {
   import com.google.common.base.Joiner;
   import org.objectweb.asm.commons.GeneratorAdapter;
   import org.objectweb.asm.Type;
+  import org.objectweb.asm.Label;
   
   import static org.objectweb.asm.commons.Method.*;
   import static org.objectweb.asm.Type.*;
@@ -55,11 +56,19 @@ exprs
   ;
 
 bexpr
+@init {
+  String op = ((CommonTree)input.LT(3)).getText(); 
+}
   : literal
   | varDef
   | setExpr
   | printExpr
   | arithExpr
+  | labelDef
+  | gotoStmt
+  | incExpr
+  | boolExpr
+//  | whileExpr
   | ^(BEXPR b=bexpr)
   ;
 
@@ -104,11 +113,58 @@ varDef
   }
   ;
   
+labelDef
+  : {((CommonTree)input.LT(3)).getText().equals("label")}?  // semantic predicate: is the ID == 'label'? 
+    ^(BEXPR ID id=ID) {
+      String ident = $id.text;
+      if (root.lookup(ident) != null)
+        throw new BtException("Illegal attempt to redeclare label " + ident, new SrcLoc(null, $id.line, $id.pos));
+    
+      IdentifierAttributes idas = new IdentifierAttributes(ident);
+      Label label = mg.mark();
+      idas.set("label", label);
+      
+      root.insert(idas);
+    }    
+  ;
+
+incExpr
+  : {((CommonTree)input.LT(3)).getText().equals("inc")}?  // semantic predicate: is the ID == 'label'? 
+    ^(BEXPR ID id=ID) {
+	    String ident = $id.text;
+	    IdentifierAttributes idas = root.lookup(ident);
+	    if (idas == null)
+	      throw new BtException("Reference to undefined variable " + ident + ", symbol table: " + root, 
+	                new SrcLoc(null, $id.line, $id.pos));
+	    
+	    int varId = (Integer) idas.get("varId");
+	    mg.loadLocal(varId);
+      mg.unbox(Type.INT_TYPE);
+      mg.push(1);
+      mg.math(GeneratorAdapter.ADD, Type.INT_TYPE);
+      mg.box(Type.INT_TYPE);  
+      mg.storeLocal(varId);
+    }    
+  ;
+
+gotoStmt
+  : {((CommonTree)input.LT(3)).getText().equals("goto")}?  // semantic predicate: is the ID == 'goto'? 
+    ^(BEXPR ID id=ID) {
+	    String ident = $id.text;
+	    IdentifierAttributes idas = root.lookup(ident);
+	    if (idas == null)
+	      throw new BtException("Reference to undefined label " + ident + ", symbol table: " + root, 
+	                new SrcLoc(null, $id.line, $id.pos));
+      Label label = (Label) idas.get("label");
+      mg.goTo(label);	                
+    }    
+  ;
+  
 setExpr
   : {((CommonTree)input.LT(3)).getText().equals("set")}?  // semantic predicate: is the ID == 'set'? 
     ^(BEXPR 
       ID 
-      id=ID { loadVar($id.tree); }
+      id=ID
       bexpr
     ) 
   {
@@ -123,15 +179,14 @@ setExpr
   }
   ;
 
-arithExpr returns [Object val]
-@init{ int etyp = 0; }
+arithExpr
+@init{ 
+  int etyp = 0; 
+  String op = ((CommonTree)input.LT(3)).getText(); 
+}
   : {
-      ((CommonTree)input.LT(3)).getText().equals("+") ||  
-      ((CommonTree)input.LT(3)).getText().equals("-") ||  
-      ((CommonTree)input.LT(3)).getText().equals("*") ||  
-      ((CommonTree)input.LT(3)).getText().equals("/") ||    
-      ((CommonTree)input.LT(3)).getText().equals("\%")   
-
+      op.equals("+") || op.equals("-") || op.equals("*") ||  
+      op.equals("/") || op.equals("\%")   
     }?   
     ^(BEXPR ('+' {etyp=0;}|'-' {etyp=1;}|'*' {etyp=2;}|'/' {etyp=3;}|MODOP {etyp=4;}) es=exprs) 
   {
@@ -148,6 +203,36 @@ arithExpr returns [Object val]
       mg.invokeStatic(getType(org.bt.runtime.Math.class), getMethod("Object " + meth + " (Object, Object)"));
   }
   ;
+
+boolExpr
+@init{ 
+  int etyp = 0;
+  String op = ((CommonTree)input.LT(3)).getText(); 
+}
+  : {
+      op.equals("<")   || op.equals(">")  || op.equals("<=") ||  
+      op.equals(">=")  || op.equals("==") || op.equals("!=") ||
+      op.equals("and") || op.equals("or")
+  }?   
+    ^(BEXPR 
+       ('<' {etyp=0;}|'>' {etyp=1;}|'<=' {etyp=2;}|'>=' {etyp=3;}
+        |'==' {etyp=4;}|'!=' {etyp=5;}|'and' {etyp=6;}|'or' {etyp=7;}) 
+       es=exprs)
+  {
+      String meth;
+      switch (etyp) {
+      case 0: meth = "add";         break;
+      case 1: meth = "subtract";    break;
+      case 2: meth = "multiply";    break;
+      case 3: meth = "divide";      break;
+      case 4: meth = "mod";         break;
+      default: throw new BtException("Unexpected operator type: " + etyp);
+      }
+    
+      mg.invokeStatic(getType(org.bt.runtime.Math.class), getMethod("Object " + meth + " (Object, Object)"));
+  }
+  ;
+
  
 literal 
   : ID {

@@ -118,7 +118,7 @@
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-all</artifactId>
 			<version>4.0</version>
-		</dependency>
+		</dependency> 
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>joor</artifactId>

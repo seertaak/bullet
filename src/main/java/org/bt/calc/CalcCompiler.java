@@ -3,6 +3,7 @@ package org.bt.calc;
 import static org.objectweb.asm.Type.getType;
 import static org.objectweb.asm.commons.Method.getMethod;
 
+import java.io.PrintWriter;
 import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -26,28 +27,34 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
+import org.objectweb.asm.util.TraceClassVisitor;
 
 import sun.invoke.anon.AnonymousClassLoader;
 
 public class CalcCompiler implements Opcodes {
 	
-	private static final String CLASSNAME = "/org/bt/calc/CalcCompiled";
+	private static final String CLASSNAME = "org/bt/calc/CalcCompiled";
 	@SuppressWarnings("unused")
 	private static final Handle BOOTSTRAP = new Handle(H_INVOKESTATIC, 
 		    "org/dynalang/dynalink/DefaultBootstrapper","bootstrap", MethodType.methodType(CallSite.class,
 		        MethodHandles.Lookup.class, String.class, MethodType.class).toMethodDescriptorString());
 	@SuppressWarnings("unused")
 	private static final Object[] BOOTSTRAP_ARGS = new Object[0];
-	private ClassWriter cv;
+	private ClassWriter cw;
+	private TraceClassVisitor cv;
+	//private CheckClassAdapter cv;
 	private GeneratorAdapter mg;
 	private AnonymousClassLoader classLoader;
 	
 	public CalcCompiler() {
-		cv = new ClassWriter(ClassWriter.COMPUTE_MAXS + ClassWriter.COMPUTE_FRAMES);
+		cw = new ClassWriter(ClassWriter.COMPUTE_MAXS + ClassWriter.COMPUTE_FRAMES);
+		cv = new TraceClassVisitor(cw, new PrintWriter(System.out));
+		//cv = new CheckClassAdapter(cw);
 		cv.visit(V1_7, ACC_PUBLIC + ACC_SUPER, CLASSNAME, null, "java/lang/Object", null);
 		{ 
 			Method m = getMethod("void <init> ()");
 			GeneratorAdapter mg = new GeneratorAdapter(ACC_PUBLIC, m, null, null, cv);
+			mg.visitCode();
 			mg.loadThis();
 			mg.invokeConstructor(getType(Object.class), m);
 			mg.returnValue();
@@ -80,7 +87,9 @@ public class CalcCompiler implements Opcodes {
 			mg.returnValue();
 			mg.endMethod();
 			
-			Class<?> calcClass = classLoader.loadClass(cv.toByteArray());
+			cv.visitEnd();
+			
+			Class<?> calcClass = classLoader.loadClass(cw.toByteArray());
 			return calcClass.newInstance();
 		} catch (Throwable e) {
 			throw new BtException(e);

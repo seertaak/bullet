@@ -1,4 +1,13 @@
-var i: 10*10
-var j 22
-set j 10
-print i+j
+var i 0
+if i>10
+  print "It's big"
+  print "It's small"
+
+i>10  
+=>
+push i
+push 10
+ifgt label2
+
+(op.++ 4 5) 
+
