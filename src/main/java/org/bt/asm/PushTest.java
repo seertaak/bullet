@@ -13,7 +13,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
-import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 
 import sun.invoke.anon.AnonymousClassLoader;
@@ -48,7 +47,7 @@ public class PushTest implements Opcodes {
 			mg.box(Type.DOUBLE_TYPE);
 			mg.storeLocal(x);
 			
-			Label point = mg.newLabel();
+			//Label point = mg.newLabel();
 			mg.push(30.0);
 			mg.box(Type.DOUBLE_TYPE);
 			mg.loadLocal(x);
@@ -122,6 +121,7 @@ public class PushTest implements Opcodes {
 			mv.visitMaxs(2, 1);
 			mv.visitEnd();
 			
+//			GeneratorAdapter mg = new GeneratorAdapter(access, method, mv);
 		}
 		cv.visitEnd();
 		
@@ -131,13 +131,48 @@ public class PushTest implements Opcodes {
 		Reflect.on(o).call("testLoop");
 	}
 	
-	public static boolean foo(int x, int y) {
+	public static void farce() {
+		boolean x = true;
+		if (x) 
+			System.out.println("foo");
+	}
+	
+	public static Boolean bar() {
+		Object x = false;
+		Object y = true;
+		boolean bx = ((Boolean)x).booleanValue();
+		if (bx) {
+			boolean by = ((Boolean)y).booleanValue();
+			if (by)
+				return true;
+			else
+				return false;
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean foo(Object x, Object y) {
+		double xx, yy;
+		if (x instanceof Number)
+			xx = ((Number)x).doubleValue();
+		else
+			throw new IllegalStateException();
+		if (y instanceof Number)
+			yy = ((Number)y).doubleValue();
+		else
+			throw new IllegalStateException();
 		boolean foo;
-		if (x > y)
+		if (xx > yy)
 			foo = true;
 		else
 			foo = false;
 		return foo;
 	}
 
+	public static void whileTest(boolean status) {
+		while (status) {
+			System.out.println();
+		}
+	}
 }

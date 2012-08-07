@@ -18,6 +18,7 @@ options {
   
   import static org.objectweb.asm.commons.Method.*;
   import static org.objectweb.asm.Type.*;
+  import static org.objectweb.asm.commons.GeneratorAdapter.*;
   
   import org.bt.BtException;
   import org.bt.SrcLoc;
@@ -67,8 +68,8 @@ bexpr
   | labelDef
   | gotoStmt
   | incExpr
-  | boolExpr
-//  | whileExpr
+  | cmpExpr
+  | whileExpr
   | ^(BEXPR b=bexpr)
   ;
 
@@ -111,6 +112,31 @@ varDef
     int varId = (Integer) idas.get("varId");
     mg.storeLocal(varId);
   }
+  ;
+  
+whileExpr
+@init{
+   Label body = mg.newLabel();
+   Label test = mg.newLabel();
+   Label end = mg.newLabel();
+   mg.goTo(test);
+}
+  : {((CommonTree)input.LT(3)).getText().equals("while")}?  // semantic predicate: is the ID == 'print'?
+    ^(BEXPR
+      ID {
+        mg.mark(test);
+      }
+      ce=bexpr {
+        mg.unbox(BOOLEAN_TYPE);
+        mg.ifZCmp(EQ, end);
+        mg.goTo(body);
+        mg.mark(body);
+      }
+      es=exprs {
+        mg.goTo(test);
+        mg.mark(end);
+      }
+    )
   ;
   
 labelDef
@@ -204,7 +230,7 @@ arithExpr
   }
   ;
 
-boolExpr
+cmpExpr
 @init{ 
   int etyp = 0;
   String op = ((CommonTree)input.LT(3)).getText(); 
@@ -219,20 +245,86 @@ boolExpr
         |'==' {etyp=4;}|'!=' {etyp=5;}|'and' {etyp=6;}|'or' {etyp=7;}) 
        es=exprs)
   {
-      String meth;
-      switch (etyp) {
-      case 0: meth = "add";         break;
-      case 1: meth = "subtract";    break;
-      case 2: meth = "multiply";    break;
-      case 3: meth = "divide";      break;
-      case 4: meth = "mod";         break;
-      default: throw new BtException("Unexpected operator type: " + etyp);
-      }
     
-      mg.invokeStatic(getType(org.bt.runtime.Math.class), getMethod("Object " + meth + " (Object, Object)"));
+    if (etyp <= 3) {
+	    String meth;
+	    switch (etyp) {
+	    case 0:   meth = "lt";    break;
+	    case 1:   meth = "gt";    break;
+	    case 2:   meth = "lte";   break;
+	    case 3:   meth = "gte";   break;
+	    default: throw new IllegalStateException();
+	    };
+	    mg.invokeStatic(getType(org.bt.runtime.Numbers.class), getMethod("boolean " + meth + "(Object, Object)"));
+	    mg.invokeStatic(getType(java.lang.Boolean.class), getMethod("Boolean valueOf(boolean)"));
+    } else if (etyp == 4 || etyp == 5) {
+      mg.invokeStatic(getType(java.util.Objects.class), getMethod("boolean equals(Object, Object)"));
+      if (etyp == 5)
+        mg.not();
+      mg.invokeStatic(getType(java.lang.Boolean.class), getMethod("Boolean valueOf(boolean)"));      
+    } else if (etyp == 6) {
+      // A and B
+      Label lbl = mg.newLabel();
+      Label clauseAFalse = mg.newLabel();
+      Label clauseBFalse = mg.newLabel();
+      Label end = new Label();
+      // Stack: B, A
+      mg.swap();
+      // Stack: A, B
+      // Stack: A.value
+      mg.unbox(BOOLEAN_TYPE);
+      // if A.value == 0 (i.e. A.value == false)
+      mg.ifZCmp(EQ, clauseAFalse);
+      // true, so continue checking
+      // Stack: B
+      mg.unbox(BOOLEAN_TYPE);
+      // Stack: B.value
+      mg.ifZCmp(EQ, clauseBFalse);
+      mg.push(true);
+      mg.goTo(end);
+      
+      // false, so quit with false
+      mg.mark(clauseAFalse);
+      mg.pop();
+      mg.mark(clauseBFalse);
+      mg.push(false);
+      
+      mg.mark(end);
+      mg.box(BOOLEAN_TYPE);
+    } else if (etyp == 7) {
+      // A or B
+      Label clauseATrue = mg.newLabel();
+      Label clauseBTrue = mg.newLabel();
+      Label end = mg.newLabel();
+      // Stack: B, A
+      mg.swap();
+      // Stack: A, B
+      // Stack: A.value
+      mg.unbox(BOOLEAN_TYPE);
+      // if A.value == 0 (i.e. A.value == false)
+      mg.push(true);
+      mg.ifICmp(EQ, clauseATrue);
+      // true, so continue checking
+      // Stack: B
+      mg.unbox(BOOLEAN_TYPE);
+      // Stack: B.value
+      mg.push(true);
+      mg.ifICmp(EQ, clauseBTrue);
+      mg.push(false);
+      mg.goTo(end);
+      
+      // true, so quit with true
+      mg.mark(clauseATrue);
+      mg.pop();
+      mg.mark(clauseBTrue);
+      mg.push(true);
+      
+      mg.mark(end);
+      mg.box(BOOLEAN_TYPE);
+    }
   }
   ;
-
+  
  
 literal 
   : ID {
